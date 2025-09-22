@@ -8,7 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   BarChart,
-  Bar
+  Bar,
+  AreaChart,
+  Area
 } from 'recharts';
 
 import {
@@ -27,8 +29,10 @@ import {
   Filter,
   Download,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  FileDown
 } from "lucide-react";
+
 
 
 const monthlyExpenseData = [
@@ -82,17 +86,26 @@ const data = [
   { month: "Feb", transactions: 135 },
   { month: "Mar", transactions: 128 },
   { month: "Apr", transactions: 142 },
-  { month: "May", transactions: 160 },
+  { month: "May", transactions: 156 },
   { month: "Jun", transactions: 148 },
 ];
 
 const expenseData = [
-  { month: "Jan", amount: 4200 },
-  { month: "Feb", amount: 4800 },
-  { month: "Mar", amount: 4100 },
-  { month: "Apr", amount: 5200 },
-  { month: "May", amount: 6100 },
-  { month: "Jun", amount: 5800 },
+  { month: "Jan", amount: 850 },
+  { month: "Feb", amount: 1200 },
+  { month: "Mar", amount: 980 },
+  { month: "Apr", amount: 1450 },
+  { month: "May", amount: 1100 },
+  { month: "Jun", amount: 1350 },
+];
+
+const monthlyData = [
+  { month: "Jan", amount: 45000 },
+  { month: "Feb", amount: 52000 },
+  { month: "Mar", amount: 48000 },
+  { month: "Apr", amount: 61000 },
+  { month: "May", amount: 55000 },
+  { month: "Jun", amount: 58000 },
 ];
 
 const navItems = [
@@ -333,23 +346,25 @@ function Dashboard() {
           <p style={pMuted}>Your spending pattern over the last 6 months</p>
           <div style={{ height: "250px" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={expenseData}>
+              <AreaChart data={expenseData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
+                
+                <YAxis ticks={[0, 400, 800, 1200, 1600]}/>
+                
                 <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
-                <Line type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={2} />
-              </LineChart>
+                <Area type="monotone" dataKey="amount" stroke="#5c5effff" strokeWidth={1} fill="#d8d8ffff"/>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
         <div style={cardStyle}>
           <h3 style={h3Style}>Budget Status</h3>
           <p style={pMuted}>Category-wise budget usage</p>
-          <BudgetBar name="Meals" used={320} total={500} color="#ef4444" />
-          <BudgetBar name="Transportation" used={180} total={300} color="#10b981" />
-          <BudgetBar name="Office Supplies" used={75} total={150} color="#f59e0b" />
-          <BudgetBar name="Training" used={299} total={1000} color="#8b5cf6" />
+          <BudgetBar name="Meals" used={320} total={500} color="#000000" />
+          <BudgetBar name="Transportation" used={180} total={300} color="#000000" />
+          <BudgetBar name="Office Supplies" used={75} total={150} color="#000000" />
+          <BudgetBar name="Training" used={299} total={1000} color="#000000" />
         </div>
       </div>
 
@@ -524,11 +539,11 @@ function Dashboard() {
             <p style={pMuted}>Expense patterns over the last 6 months</p>
             <div style={{ height: "250px" }}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={expenseData}>
+                <LineChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`$${value}`, 'Amount']} />
+                  <YAxis  ticks={[0, 20000, 40000, 60000, 80000]} />
+                  <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Expenses']} />
                   <Line type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
@@ -621,54 +636,32 @@ function Dashboard() {
       )}
 
       {activeOverviewTab === "Trends" && (
-        <div>
-          <div style={cardStyle}>
-            <h3 style={h3Style}>Expense Trends Analysis</h3>
-            <p style={pMuted}>Detailed trend analysis with growth indicators</p>
-            <div style={{ height: "420px" }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={expenseData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#e5e7eb"
-                    vertical={true}
-                    horizontal={true}
-                  />
-                  <XAxis
-                    dataKey="month"
-                    tick={{ fontSize: 12 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12 }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(value) => `$${(value/1000).toFixed(0)}k`}
-                  />
-                  <Tooltip
-                    formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="amount"
-                    stroke="#6366f1"
-                    strokeWidth={3}
-                    dot={{ fill: '#6366f1', strokeWidth: 2, r: 5 }}
-                    activeDot={{ r: 7, stroke: '#6366f1', strokeWidth: 2 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      )}
+  <div>
+    <div style={cardStyle}>
+      <h3 style={h3Style}>Expense Trends Analysis</h3>
+      <p style={pMuted}>Detailed trend analysis with growth indicators</p>
+      <div style={{ height: "420px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={monthlyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis ticks={[0, 20000, 40000, 60000, 80000]} />
+            <Tooltip
+              formatter={(value) => [`$${value.toLocaleString()}`, "Expenses"]}
+            />
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#6366f1"
+              strokeWidth={3}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {activeOverviewTab === "Categories" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
@@ -1407,10 +1400,157 @@ function Dashboard() {
 )}
 
 
-      {activeItem === "Reports" && (
-        <div style={cardStyle}>
-          </div>
-      )}
+   {activeItem === "Reports" && (
+  <>
+    {/* Header */}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <div>
+        <h2 style={{ margin: 0 }}>Reports & Analytics</h2>
+        <p style={{ color: "#6b7280", margin: 0 }}>
+          Comprehensive expense analysis and insights
+        </p>
+      </div>
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button
+          style={{
+            padding: "8px 12px",
+            border: "1px solid #ddd",
+            borderRadius: "6px",
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => handleExport("PDF")}
+        >
+          <FileText size={16} style={{ marginRight: "6px" }} />
+          Export PDF
+        </button>
+        <button
+          style={{
+            padding: "8px 12px",
+            border: "1px solid #ddd",
+            borderRadius: "6px",
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => handleExport("Excel")}
+        >
+          <FileDown size={16} style={{ marginRight: "6px" }} />
+          Export Excel
+        </button>
+      </div>
+    </div>
+
+    {/* Filters */}
+    <div
+      style={{
+        marginTop: "20px",
+        border: "1px solid #e5e7eb",
+        borderRadius: "8px",
+        padding: "16px",
+        background: "#fff",
+      }}
+    >
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}
+      >
+        <Filter size={18} style={{ marginRight: "8px" }} />
+        <h4 style={{ margin: 0 }}>Filters</h4>
+      </div>
+      <p style={{ color: "#6b7280", marginTop: "0", marginBottom: "16px" }}>
+        Customize your report view
+      </p>
+
+      <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+        <select
+          style={{
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+          }}
+        >
+          <option>Last 6 Months</option>
+          <option>Last Year</option>
+          <option>Custom Range</option>
+        </select>
+
+        <select
+          style={{
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+          }}
+        >
+          <option>All Departments</option>
+          <option>Finance</option>
+          <option>HR</option>
+        </select>
+
+        <select
+          style={{
+            padding: "8px",
+            borderRadius: "6px",
+            border: "1px solid #ddd",
+          }}
+        >
+          <option>All Categories</option>
+          <option>Travel</option>
+          <option>Meals</option>
+        </select>
+
+        <button
+          style={{
+            background: "#6366f1",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            padding: "8px 16px",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+        >
+          📊 Update Report
+        </button>
+      </div>
+
+      {/* Checkbox */}
+      <div>
+        <label>
+          <input type="checkbox" style={{ marginRight: "6px" }} />
+          Include Archived Records
+        </label>
+      </div>
+    </div>
+  </>
+)}
+
+{/* Toast message */}
+{toastMessage && (
+  <div
+    style={{
+      position: "fixed",
+      bottom: "20px",
+      right: "20px",
+      background: "#111827",
+      color: "#fff",
+      padding: "10px 16px",
+      borderRadius: "6px",
+    }}
+  >
+    {toastMessage}
+  </div>
+)}
 
       {activeItem === "Alerts" && (
         <div style={cardStyle}>
