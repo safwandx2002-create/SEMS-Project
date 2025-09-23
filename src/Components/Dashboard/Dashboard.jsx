@@ -10,7 +10,10 @@ import {
   BarChart,
   Bar,
   AreaChart,
-  Area
+  Area,
+  Pie,
+  Cell,
+  PieChart
 } from 'recharts';
 
 import {
@@ -30,8 +33,11 @@ import {
   Download,
   TrendingUp,
   TrendingDown,
-  FileDown
+  FileDown,
+  ChartColumn,
+  Circle
 } from "lucide-react";
+import { icon } from "@fortawesome/fontawesome-svg-core";
 
 
 
@@ -78,6 +84,34 @@ const expenseSummaryData = [
 ];
 
 
+const expenseDistributionData = [
+  { name: "Rent", value: 12000, color: "#6366f1" },      // أزرق
+  { name: "Utilities", value: 4500, color: "#10b981" },  // أخضر
+  { name: "Supplies", value: 2800, color: "#f59e0b" },   // أصفر
+  { name: "Equipment", value: 3100, color: "#8b5cf6" },  // بنفسجي
+  { name: "Travel", value: 1200, color: "#ef4444" },     // أحمر
+  { name: "Meals", value: 800, color: "#6b7280" }        // رمادي
+];
+
+
+
+const percentAreaData = [
+  { month: "Jan", Travel: 12000, Meals: 3200, Equipment: 1800, Office: 2400 },
+  { month: "Feb", Travel: 12000, Meals: 3500, Equipment: 2100, Office: 1800 },
+  { month: "Mar", Travel: 12000, Meals: 3800, Equipment: 2400, Office: 3200 },
+  { month: "Apr", Travel: 12000, Meals: 3200, Equipment: 1900, Office: 2100 },
+  { month: "May", Travel: 12000, Meals: 4100, Equipment: 2200, Office: 2800 },
+  { month: "Jun", Travel: 12000, Meals: 4500, Equipment: 2800, Office: 3100 }
+];
+
+const categoryComparison = [
+  { category: "Rent", current: 12000, previous: 12000, change: 0.0 },
+  { category: "Utilities", current: 4500, previous: 3200, change: 40.6 },
+  { category: "Supplies", current: 2800, previous: 2200, change: 27.3 },
+  { category: "Equipment", current: 3100, previous: 2800, change: 10.7 },
+  { category: "Travel", current: 1200, previous: 1500, change: -20.0 },
+  { category: "Meals", current: 800, previous: 950, change: -15.8 }
+];
 
 
 
@@ -144,8 +178,17 @@ function Dashboard() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [cameraError, setCameraError] = useState(null);
   const [showCameraError, setShowCameraError] = useState(false);
+  const [toastMessage, setToastMessage] = useState(""); 
   const videoRef = useRef(null);
   const successTimeoutRef = useRef(null);
+  const [selectedCategories, setSelectedCategories] = useState({Travel: true,Meals: true,Equipment: true,Office: true,Training: true});
+
+const handleCategoryToggle = (category) => {
+  setSelectedCategories(prev => ({
+    ...prev,
+    [category]: !prev[category]
+  }));
+};
 
   const categoryData = [
     { name: "Travel", amount: 28000, percentage: 41.2, color: "#6366f1" },
@@ -155,7 +198,46 @@ function Dashboard() {
     { name: "Training", amount: 5000, percentage: 7.4, color: "#ef4444" }
   ];
 
-  
+const pieData = categoryData.map(item => ({
+    name: item.name,
+    value: item.amount,
+    percentage: item.percentage,
+    color: item.color
+  }));  
+
+
+   // Custom label function for percentage display
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor={x > cx ? 'start' : 'end'} 
+        dominantBaseline="central"
+        fontSize="14"
+        fontWeight="600"
+      >
+        {`${(percent * 100).toFixed(1)}%`}
+      </text>
+    );
+  };
+
+  // Handle pie chart click
+  const onPieClick = (data, index) => {
+    setSelectedCategory(selectedCategory === data.name ? null : data.name);
+  };
+
+  // Handle export functions
+  const handleExport = (format) => {
+    setToastMessage(`Exporting data as ${format}...`);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -664,248 +746,112 @@ function Dashboard() {
 
 
       {activeOverviewTab === "Categories" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
-          {/* Pie Chart Section */}
-          <div style={cardStyle}>
-            <h3 style={h3Style}>Expense by Category</h3>
-            <p style={pMuted}>Distribution of expenses across categories</p>
-            <div style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "300px",
-              position: "relative"
-            }}>
-              {/* SVG Pie Chart */}
-              <svg width="300" height="300" viewBox="-150 -150 300 300">
-                {/* Travel - 41.2% (Largest - Purple) */}
-                <path
-                  d="M 0 0 L 0 -100 A 100 100 0 0 1 95 -31 Z"
-                  fill={selectedCategory === "Travel" ? "#4f46e5" : "#6366f1"}
-                  stroke="white"
-                  strokeWidth="3"
+  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+    {/* Pie Chart Section */}
+    <div style={cardStyle}>
+      <h3 style={h3Style}>Expense by Category</h3>
+      <p style={pMuted}>Distribution of expenses across categories</p>
+      <div style={{
+        height: "350px",
+        position: "relative"
+      }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              outerRadius={120}
+              innerRadius={40}
+              fill="#8884d8"
+              dataKey="value"
+              onClick={onPieClick}
+              stroke="white"
+              strokeWidth={3}
+              paddingAngle={5}
+            >
+              {pieData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={selectedCategory === entry.name ? entry.color : entry.color}
                   style={{
                     cursor: "pointer",
-                    transition: "fill 0.2s",
-                    transform: selectedCategory === "Travel" ? "scale(1.05)" : "scale(1)"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === "Travel" ? null : "Travel")}
-                  onMouseEnter={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'block';
-                      tooltip.innerHTML = 'Travel: $28,000 (41.2%)';
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'none';
-                    }
+                    filter: selectedCategory === entry.name ? "brightness(0.9)" : "brightness(1)",
+                    transform: selectedCategory === entry.name ? "scale(1.02)" : "scale(1)"
                   }}
                 />
-
-                {/* Meals - 22.1% */}
-                <path
-                  d="M 0 0 L 95 -31 A 100 100 0 0 1 95 31 Z"
-                  fill={selectedCategory === "Meals" ? "#059669" : "#10b981"}
-                  stroke="white"
-                  strokeWidth="3"
-                  style={{
-                    cursor: "pointer",
-                    transition: "fill 0.2s",
-                    transform: selectedCategory === "Meals" ? "scale(1.05)" : "scale(1)"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === "Meals" ? null : "Meals")}
-                  onMouseEnter={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'block';
-                      tooltip.innerHTML = 'Meals: $15,000 (22.1%)';
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'none';
-                    }
-                  }}
-                />
-
-                {/* Equipment - 17.6% */}
-                <path
-                  d="M 0 0 L 95 31 A 100 100 0 0 1 0 100 Z"
-                  fill={selectedCategory === "Equipment" ? "#7c3aed" : "#8b5cf6"}
-                  stroke="white"
-                  strokeWidth="3"
-                  style={{
-                    cursor: "pointer",
-                    transition: "fill 0.2s",
-                    transform: selectedCategory === "Equipment" ? "scale(1.05)" : "scale(1)"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === "Equipment" ? null : "Equipment")}
-                  onMouseEnter={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'block';
-                      tooltip.innerHTML = 'Equipment: $12,000 (17.6%)';
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'none';
-                    }
-                  }}
-                />
-
-                {/* Office Supplies - 11.8% */}
-                <path
-                  d="M 0 0 L 0 100 A 100 100 0 0 1 -95 31 Z"
-                  fill={selectedCategory === "Office Supplies" ? "#d97706" : "#f59e0b"}
-                  stroke="white"
-                  strokeWidth="3"
-                  style={{
-                    cursor: "pointer",
-                    transition: "fill 0.2s",
-                    transform: selectedCategory === "Office Supplies" ? "scale(1.05)" : "scale(1)"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === "Office Supplies" ? null : "Office Supplies")}
-                  onMouseEnter={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'block';
-                      tooltip.innerHTML = 'Office Supplies: $8,000 (11.8%)';
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'none';
-                    }
-                  }}
-                />
-
-                {/* Training - 7.4% (Smallest) */}
-                <path
-                  d="M 0 0 L -95 31 A 100 100 0 0 1 0 -100 Z"
-                  fill={selectedCategory === "Training" ? "#dc2626" : "#ef4444"}
-                  stroke="white"
-                  strokeWidth="3"
-                  style={{
-                    cursor: "pointer",
-                    transition: "fill 0.2s",
-                    transform: selectedCategory === "Training" ? "scale(1.05)" : "scale(1)"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === "Training" ? null : "Training")}
-                  onMouseEnter={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'block';
-                      tooltip.innerHTML = 'Training: $5,000 (7.4%)';
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (tooltip) {
-                      tooltip.style.display = 'none';
-                    }
-                  }}
-                />
-
-                {/* Inner white circle for donut effect */}
-                <circle cx="0" cy="0" r="45" fill="white" />
-
-                {/* Tooltip */}
-                <foreignObject x="-75" y="-75" width="150" height="150">
-                  <div
-                    id="tooltip"
-                    style={{
-                      display: 'none',
-                      background: 'rgba(0, 0, 0, 0.8)',
-                      color: 'white',
-                      padding: '8px',
-                      borderRadius: '4px',
-                      fontSize: '14px',
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      textAlign: 'center',
-                      pointerEvents: 'none'
-                    }}
-                  />
-                </foreignObject>
-              </svg>
-
-              {/* Interactive Tooltip */}
-              {selectedCategory && (
-                <div style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  background: "rgba(0, 0, 0, 0.8)",
-                  color: "white",
-                  padding: "12px 16px",
-                  borderRadius: "8px",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  textAlign: "center",
-                  pointerEvents: "none",
-                  zIndex: 10
-                }}>
-                  <div>{selectedCategory}</div>
-                  <div>${categoryData.find(cat => cat.name === selectedCategory)?.amount.toLocaleString()}</div>
-                  <div>{categoryData.find(cat => cat.name === selectedCategory)?.percentage}%</div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Category Details Section */}
-          <div style={cardStyle}>
-            <h3 style={h3Style}>Category Details</h3>
-            <p style={pMuted}>Breakdown by expense category</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "32px" }}>
-
-              {categoryData.map((category) => (
-                <div
-                  key={category.name}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "12px",
-                    borderRadius: "8px",
-                    backgroundColor: selectedCategory === category.name ? "#f8fafc" : "transparent",
-                    border: selectedCategory === category.name ? "2px solid " + category.color : "2px solid transparent",
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                  onClick={() => setSelectedCategory(selectedCategory === category.name ? null : category.name)}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                    <div style={{
-                      width: "16px",
-                      height: "16px",
-                      borderRadius: "50%",
-                      backgroundColor: category.color
-                    }}></div>
-                    <span style={{ fontSize: "16px", fontWeight: "500", color: "#374151" }}>{category.name}</span>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: "18px", fontWeight: "600", color: "#1f2937" }}>${category.amount.toLocaleString()}</div>
-                    <div style={{ fontSize: "14px", color: "#6b7280" }}>{category.percentage}%</div>
-                  </div>
-                </div>
               ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
 
+        {/* Selected Category Tooltip */}
+        {selectedCategory && (
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            background: "rgba(0, 0, 0, 0.8)",
+            color: "white",
+            padding: "12px 16px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            fontWeight: "600",
+            textAlign: "center",
+            pointerEvents: "none",
+            zIndex: 10
+          }}>
+            <div>{selectedCategory}</div>
+            <div>${categoryData.find(cat => cat.name === selectedCategory)?.amount.toLocaleString()}</div>
+            <div>{categoryData.find(cat => cat.name === selectedCategory)?.percentage}%</div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Category Details Section */}
+    <div style={cardStyle}>
+      <h3 style={h3Style}>Category Details</h3>
+      <p style={pMuted}>Breakdown by expense category</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "32px" }}>
+        {categoryData.map((category) => (
+          <div
+            key={category.name}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "16px",
+              borderRadius: "8px",
+              backgroundColor: selectedCategory === category.name ? "#f8fafc" : "transparent",
+              border: selectedCategory === category.name ? "2px solid " + category.color : "2px solid transparent",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onClick={() => setSelectedCategory(selectedCategory === category.name ? null : category.name)}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{
+                width: "16px",
+                height: "16px",
+                borderRadius: "50%",
+                backgroundColor: category.color
+              }}></div>
+              <span style={{ fontSize: "16px", fontWeight: "500", color: "#374151" }}>{category.name}</span>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: "18px", fontWeight: "600", color: "#1f2937" }}>${category.amount.toLocaleString()}</div>
+              <div style={{ fontSize: "14px", color: "#6b7280" }}>{category.percentage}%</div>
             </div>
           </div>
-        </div>
-      )}
-
+        ))}
+      </div>
+    </div>
+  </div>
+)}
       {activeOverviewTab === "Departments" && (
         <div style={cardStyle}>
           <h3 style={h3Style}>Department Analysis</h3>
@@ -1401,155 +1347,621 @@ function Dashboard() {
 
 
    {activeItem === "Reports" && (
-  <>
+  <div style={{ width: "100%" }}>
     {/* Header */}
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px",
-      }}
-    >
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: "20px"
+    }}>
       <div>
-        <h2 style={{ margin: 0 }}>Reports & Analytics</h2>
-        <p style={{ color: "#6b7280", margin: 0 }}>
-          Comprehensive expense analysis and insights
-        </p>
       </div>
-      <div style={{ display: "flex", gap: "8px" }}>
+      <div style={{ display: "flex", gap: "12px" }}>
         <button
           style={{
-            padding: "8px 12px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
+            padding: "10px 16px",
+            border: "1px solid #d1d5db",
+            borderRadius: "8px",
             background: "#fff",
             display: "flex",
             alignItems: "center",
             cursor: "pointer",
+            fontSize: "14px",
+            color: "#374151"
           }}
           onClick={() => handleExport("PDF")}
         >
-          <FileText size={16} style={{ marginRight: "6px" }} />
+          <Download size={16} style={{ marginRight: "6px" }} />
           Export PDF
         </button>
         <button
           style={{
-            padding: "8px 12px",
-            border: "1px solid #ddd",
-            borderRadius: "6px",
+            padding: "10px 16px",
+            border: "1px solid #d1d5db",
+            borderRadius: "8px",
             background: "#fff",
             display: "flex",
             alignItems: "center",
             cursor: "pointer",
+            fontSize: "14px",
+            color: "#374151"
           }}
           onClick={() => handleExport("Excel")}
         >
-          <FileDown size={16} style={{ marginRight: "6px" }} />
+          <Download size={16} style={{ marginRight: "6px" }} />
           Export Excel
         </button>
       </div>
     </div>
 
-    {/* Filters */}
-    <div
-      style={{
-        marginTop: "20px",
-        border: "1px solid #e5e7eb",
-        borderRadius: "8px",
-        padding: "16px",
-        background: "#fff",
-      }}
-    >
-      <div
-        style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}
-      >
-        <Filter size={18} style={{ marginRight: "8px" }} />
-        <h4 style={{ margin: 0 }}>Filters</h4>
+    {/* Filters Section */}
+    <div style={{
+      ...cardStyle,
+      marginBottom: "24px"
+    }}>
+      <div style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        marginBottom: "12px" 
+      }}>
+        <Filter size={18} style={{ marginRight: "8px", color: "#6b7280" }} />
+        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: "600", color: "#1f2937" }}>
+          Filters
+        </h4>
       </div>
-      <p style={{ color: "#6b7280", marginTop: "0", marginBottom: "16px" }}>
+      <p style={{ 
+        color: "#6b7280", 
+        marginTop: "0", 
+        marginBottom: "20px",
+        fontSize: "14px"
+      }}>
         Customize your report view
       </p>
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-        <select
-          style={{
-            padding: "8px",
+      <div style={{ 
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr auto",
+        gap: "16px",
+        alignItems: "end",
+        marginBottom: "16px"
+      }}>
+        <div>
+          <label style={{ 
+            fontSize: "14px", 
+            color: "#374151",
+            fontWeight: "500",
+            marginBottom: "8px",
+            display: "block"
+          }}>
+            Date Range
+          </label>
+          <select style={{
+            width: "100%",
+            padding: "10px 12px",
             borderRadius: "6px",
-            border: "1px solid #ddd",
-          }}
-        >
-          <option>Last 6 Months</option>
-          <option>Last Year</option>
-          <option>Custom Range</option>
-        </select>
+            border: "1px solid #d1d5db",
+            fontSize: "14px",
+            background: "#fff"
+          }}>
+            <option>Last 30 Days</option>
+            <option>Last 3 Months</option>
+            <option>Last 6 Months</option>
+            <option>Last Year</option>
+            <option>Custom Range</option>
+          </select>
+        </div>
 
-        <select
-          style={{
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #ddd",
-          }}
-        >
-          <option>All Departments</option>
-          <option>Finance</option>
-          <option>HR</option>
-        </select>
 
-        <select
-          style={{
-            padding: "8px",
+        <div>
+          <label style={{ 
+            fontSize: "14px", 
+            color: "#374151",
+            fontWeight: "500",
+            marginBottom: "8px",
+            display: "block"
+          }}>
+            Department
+          </label>
+          <select style={{
+            width: "100%",
+            padding: "10px 12px",
             borderRadius: "6px",
-            border: "1px solid #ddd",
-          }}
-        >
-          <option>All Categories</option>
-          <option>Travel</option>
-          <option>Meals</option>
-        </select>
+            border: "1px solid #d1d5db",
+            fontSize: "14px",
+            background: "#fff"
+          }}>
+            <option>All Departments</option>
+            <option>Human Resources</option>
+            <option>IT Department</option>
+            <option>Finance</option>
+            <option>Operations</option>
+          </select>
+        </div>
 
-        <button
-          style={{
-            background: "#6366f1",
-            color: "#fff",
-            border: "none",
+        <div>
+          <label style={{ 
+            fontSize: "14px", 
+            color: "#374151",
+            fontWeight: "500",
+            marginBottom: "8px",
+            display: "block"
+          }}>
+            Category
+          </label>
+          <select style={{
+            width: "100%",
+            padding: "10px 12px",
             borderRadius: "6px",
-            padding: "8px 16px",
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-          }}
-        >
-          📊 Update Report
+            border: "1px solid #d1d5db",
+            fontSize: "14px",
+            background: "#fff"
+          }}>
+            <option>All Categories</option>
+            <option>Rent</option>
+            <option>Utilities</option>
+            <option>Office Supplies</option>
+            <option>Equipment</option>
+            <option>Travel</option>
+          </select>
+        </div>
+
+        <button style={{
+          background: "#6366f1",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px",
+          padding: "12px 20px",
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+          fontSize: "14px",
+          fontWeight: "500"
+        }}>
+          <ChartColumn size={16} style={{ marginRight: "6px" }} /> 
+          Update Report
         </button>
       </div>
 
-      {/* Checkbox */}
-      <div>
-        <label>
-          <input type="checkbox" style={{ marginRight: "6px" }} />
-          Include Archived Records
-        </label>
+     
+    </div>
+
+    {/* Monthly Expense Trend Chart */}
+    <div style={{
+      ...cardStyle,
+      marginBottom: "24px"
+    }}>
+      <h3 style={{
+        fontSize: "18px",
+        fontWeight: "600",
+        color: "#1f2937",
+        margin: "0 0 8px 0"
+      }}>
+        Monthly Expense Trend
+      </h3>
+      <p style={{
+        color: "#6b7280",
+        fontSize: "14px",
+        margin: "0 0 24px 0"
+      }}>
+        Expense breakdown by category over time
+      </p>
+
+      <div style={{ height: "350px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={percentAreaData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#a3acb6ff" />
+            <XAxis 
+              dataKey="month" 
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis 
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <Tooltip 
+              formatter={(value, name) => [`$${value.toLocaleString()}`, ]}
+              labelFormatter={(label) => `${label}`}
+              contentStyle={{
+                background: "#fff",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+              }}
+            />
+            
+            <Area
+              type="monotone"
+              dataKey="Travel"
+              stackId="1"
+              stroke="#6366f1"
+              fill="#6366f1"
+            />
+            <Area
+              type="monotone"
+              dataKey="Meals"
+              stackId="1"
+              stroke="#10b981"
+              fill="#10b981"
+            />
+            <Area
+              type="monotone"
+              dataKey="Equipment"
+              stackId="1"
+              stroke="#f59e0b"
+              fill="#f59e0b"
+            />
+            <Area
+              type="monotone"
+              dataKey="Office"
+              stackId="1"
+              stroke="#8b5cf6"
+              fill="#8b5cf6"
+            />
+            
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
-  </>
-)}
 
-{/* Toast message */}
-{toastMessage && (
-  <div
-    style={{
-      position: "fixed",
-      bottom: "20px",
-      right: "20px",
-      background: "#111827",
-      color: "#fff",
-      padding: "10px 16px",
-      borderRadius: "6px",
-    }}
-  >
-    {toastMessage}
+    {/* Bottom Row - Category Comparison & Expense Distribution */}
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "24px"
+    }}>
+      {/* Category Comparison */}
+      <div style={cardStyle}>
+        <h3 style={{
+          fontSize: "18px",
+          fontWeight: "600",
+          color: "#1f2937",
+          margin: "0 0 8px 0"
+        }}>
+          Category Comparison
+        </h3>
+        <p style={{
+          color: "#6b7280",
+          fontSize: "14px",
+          margin: "0 0 24px 0"
+        }}>
+          This month vs last month
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {categoryComparison.map((item, index) => (
+            <div key={index} style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "12px 0",
+              borderBottom: index < categoryComparison.length - 1 ? "1px solid #f1f5f9" : "none"
+            }}>
+              <div>
+                <div style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  color: "#1f2937",
+                  marginBottom: "4px"
+                }}>
+                  {item.category}
+                </div>
+                <div style={{
+                  fontSize: "13px",
+                  color: "#6b7280"
+                }}>
+                  ${item.current.toLocaleString()} (was ${item.previous.toLocaleString()})
+                </div>
+              </div>
+              
+          <div style={{
+           display: "flex",
+           alignItems: "center",
+           gap: "8px"
+      }}>
+          {item.change !== 0 && (
+          <span style={{
+          fontSize: "16px",
+          color: item.change > 0 ? "#ef4444" : "#10b981"
+      }}>
+          {item.change > 0 ? <TrendingUp/> : <TrendingDown/>}
+          </span>
+      )}
+      <span style={{
+        fontSize: "14px",
+        fontWeight: "600",
+        color: item.change === 0 ? "#6b7280" : 
+          item.change > 0 ? "#ef4444" : "#10b981"
+  }}>
+    {item.change === 0 ? "0%" : 
+      item.change > 0 ? `+${item.change}%` : `${item.change}%`}
+  </span>
+</div>
+
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Expense Distribution - Pie Chart */}
+<div style={cardStyle}>
+  <h3 style={{
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#1f2937",
+    margin: "0 0 8px 0"
+  }}>
+    Expense Distribution
+  </h3>
+  <p style={{
+    color: "#6b7280",
+    fontSize: "14px",
+    margin: "0 0 24px 0"
+  }}>
+    Current month breakdown
+  </p>
+
+  <div style={{ height: "300px" }}>
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={expenseDistributionData}
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          innerRadius={60}
+          paddingAngle={4}
+          dataKey="value"
+          stroke="white"
+          strokeWidth={2}
+        >
+          {expenseDistributionData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={entry.color} />
+          ))}
+        </Pie>
+        <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, name]} />
+      </PieChart>
+    </ResponsiveContainer>
   </div>
+
+  {/* Legend */}
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "12px",
+    marginTop: "16px"
+  }}>
+    {expenseDistributionData.map((item, index) => (
+      <div key={index} style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px"
+      }}>
+        <div style={{
+          width: "12px",
+          height: "12px",
+          borderRadius: "50%",
+          backgroundColor: item.color
+        }}></div>
+        <span style={{ fontSize: "14px", color: "#374151" }}>
+          {item.name}: ${item.value.toLocaleString()}
+        </span>
+      </div>
+    ))}
+  </div>
+  </div>
+
+
+{/* Expense Alerts */}
+<div style={{
+  background: "#fff",
+  borderRadius: "08px",
+  padding: "20px",
+  border: "1px solid #f1f5f9",
+  marginBottom: "24px"
+}}>
+  <h3 style={{
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#1f2937",
+    margin: "0 0 4px 0",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px"
+  }}>
+    <AlertTriangle size={18} color="#f59e0b" />
+    Expense Alerts
+  </h3>
+  <p style={{
+    fontSize: "13px",
+    color: "#6b7280",
+    margin: "0 0 16px 0"
+  }}>
+    Notable changes and trends in your expenses
+  </p>
+
+  {/* Alert Items */}
+  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    
+    {/* Utilities Spike */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "12px",
+      border: "1px solid #f1f5f9",
+      borderRadius: "8px"
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Circle size={10} fill="#facc15" stroke="none" />
+        <div>
+          <div style={{ fontSize: "14px", fontWeight: "500", color: "#1f2937" }}>
+            Utilities Spike
+          </div>
+          <div style={{ fontSize: "13px", color: "#6b7280" }}>
+            Electricity expenses increased by 40% this month
+          </div>
+        </div>
+      </div>
+      <span style={{
+        background: "#f87171",
+        color: "#fff",
+        fontSize: "12px",
+        padding: "2px 8px",
+        borderRadius: "6px"
+      }}>High Impact</span>
+    </div>
+
+    {/* Equipment Budget */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "12px",
+      border: "1px solid #f1f5f9",
+      borderRadius: "8px"
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Circle size={10} fill="#3b82f6" stroke="none" />
+        <div>
+          <div style={{ fontSize: "14px", fontWeight: "500", color: "#1f2937" }}>
+            Equipment Budget
+          </div>
+          <div style={{ fontSize: "13px", color: "#6b7280" }}>
+            Equipment expenses are 85% of monthly budget
+          </div>
+        </div>
+      </div>
+      <span style={{
+        background: "#1e293b",
+        color: "#fff",
+        fontSize: "12px",
+        padding: "2px 8px",
+        borderRadius: "6px"
+      }}>Medium Impact</span>
+    </div>
+
+    {/* Travel Savings */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "12px",
+      border: "1px solid #f1f5f9",
+      borderRadius: "8px"
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Circle size={10} fill="#22c55e" stroke="none" />
+        <div>
+          <div style={{ fontSize: "14px", fontWeight: "500", color: "#1f2937" }}>
+            Travel Savings
+          </div>
+          <div style={{ fontSize: "13px", color: "#6b7280" }}>
+            Travel expenses decreased by 20% vs last month
+          </div>
+        </div>
+      </div>
+      <span style={{
+        background: "#e5e7eb",
+        color: "#1f2937",
+        fontSize: "12px",
+        padding: "2px 8px",
+        borderRadius: "6px"
+      }}>Low Impact</span>
+    </div>
+
+  </div>
+</div>
+
+
+{/* Expense Summary */}
+<div style={{
+  background: "#fff",
+  borderRadius: "8px",
+  padding: "20px",
+  border: "1px solid #f1f5f9"
+}}>
+  <h3 style={{
+    fontSize: "16px",
+    fontWeight: "600",
+    color: "#1f2937",
+    margin: "0 0 4px 0"
+  }}>
+    Expense Summary
+  </h3>
+  <p style={{
+    fontSize: "13px",
+    color: "#6b7280",
+    margin: "0 0 16px 0"
+  }}>
+    Detailed breakdown by category
+  </p>
+
+  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <thead>
+      <tr style={{ textAlign: "left", color: "#6b7280", fontSize: "13px" }}>
+        <th style={{ padding: "8px 0" }}>Category</th>
+        <th style={{ padding: "8px 0" }}>This Month</th>
+        <th style={{ padding: "8px 0" }}>Last Month</th>
+        <th style={{ padding: "8px 0" }}>Change</th>
+        <th style={{ padding: "8px 0" }}>% of Total</th>
+      </tr>
+    </thead>
+    <tbody style={{ fontSize: "14px", color: "#1f2937" }}>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Rent</td>
+        <td>$12,000</td>
+        <td>$12,000</td>
+        <td style={{ color: "#6b7280" }}>0.0%</td>
+        <td>49.2%</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Utilities</td>
+        <td>$4,500</td>
+        <td>$3,200</td>
+        <td style={{ color: "#ef4444" }}>+40.6%</td>
+        <td>18.4%</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Supplies</td>
+        <td>$2,800</td>
+        <td>$2,200</td>
+        <td style={{ color: "#ef4444" }}>+27.3%</td>
+        <td>11.5%</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Equipment</td>
+        <td>$3,100</td>
+        <td>$2,800</td>
+        <td style={{ color: "#ef4444" }}>+10.7%</td>
+        <td>12.7%</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Travel</td>
+        <td>$1,200</td>
+        <td>$1,500</td>
+        <td style={{ color: "#10b981" }}>-20.0%</td>
+        <td>4.9%</td>
+      </tr>
+      <tr>
+        <td style={{ padding: "12px 0" }}>Meals</td>
+        <td>$800</td>
+        <td>$950</td>
+        <td style={{ color: "#10b981" }}>-15.8%</td>
+        <td>3.3%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
+
+  </div>
+  </div>
+  
 )}
 
       {activeItem === "Alerts" && (
