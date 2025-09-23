@@ -2059,8 +2059,8 @@ const pieData = categoryData.map(item => ({
                 cursor: "pointer",
                 padding: "8px 12px",
                 borderRadius: "6px",
-                color: activeItem === item ? "#6366f1" : "#4b5563",
-                background: activeItem === item ? "#f0f9ff" : "transparent",
+                color: activeItem === item ? "#ffffffff" : "#4b5563",
+                background: activeItem === item ? "#3700ffff" : "transparent",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px"
