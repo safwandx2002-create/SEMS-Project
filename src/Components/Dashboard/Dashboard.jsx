@@ -35,9 +35,14 @@ import {
   TrendingDown,
   FileDown,
   ChartColumn,
-  Circle
+  Circle,
+  Receipt,
+  Bot,
+  Database,
+  MessageSquare,
+  Icon
 } from "lucide-react";
-import { icon } from "@fortawesome/fontawesome-svg-core";
+
 
 
 
@@ -151,6 +156,16 @@ const navItems = [
   "Alerts",
   "AI Assistant",
 ];
+
+const icons = {
+  "My Expenses": <Receipt size={16} />,
+  "Data Overview": <Database size={16} />,
+  "Upload": <Upload size={16} />,
+  "Camera": <Camera size={16} />,
+  "Reports": <ChartColumn size={16} />,
+  "Alerts": <AlertTriangle size={16} />,
+  "AI Assistant": <MessageSquare size={16} />,
+};
 
 const sectionContent = {
   "My Expenses": {
@@ -2046,8 +2061,12 @@ const pieData = categoryData.map(item => ({
                 borderRadius: "6px",
                 color: activeItem === item ? "#6366f1" : "#4b5563",
                 background: activeItem === item ? "#f0f9ff" : "transparent",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
               }}
             >
+              {icons[item]}
               {item}
             </span>
           ))}
