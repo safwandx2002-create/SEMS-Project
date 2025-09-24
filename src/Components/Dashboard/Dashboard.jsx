@@ -40,8 +40,19 @@ import {
   Bot,
   Database,
   MessageSquare,
-  Icon
+  Icon,
+  Info,
+  Zap,
+  CheckCircle2,
+  Package,
+  Calendar,
+  AlertCircle,
+  CircleX,
+  Clock4,
+  User,
+  CircleCheckBig
 } from "lucide-react";
+
 
 
 
@@ -180,6 +191,26 @@ const sectionContent = {
   "Data Overview": { title: "Data Overview", subtitle: "Comprehensive expense analytics and insights" },
 };
 
+const statusIcon = {
+  approved: <CheckCircle size={14} color="#16a34a" />,
+  pending: <Clock size={14} color="#f59e0b" />,
+  rejected: <CircleX size={14} color="#dc2626" />,
+};
+
+const statusStyles = {
+  approved: {
+    backgroundColor: "#d1fae5", 
+    color: "#065f46"           
+  },
+  pending: {
+    backgroundColor: "#fef3c7", 
+    color: "#92400e"           
+  },
+  rejected: {
+    backgroundColor: "#fee2e2", 
+    color: "#991b1b"           
+  }
+};
 function Dashboard() {
   const [showProfile, setShowProfile] = useState(false);
   const [activeItem, setActiveItem] = useState("My Expenses");
@@ -197,6 +228,129 @@ function Dashboard() {
   const videoRef = useRef(null);
   const successTimeoutRef = useRef(null);
   const [selectedCategories, setSelectedCategories] = useState({Travel: true,Meals: true,Equipment: true,Office: true,Training: true});
+  const [activeAlertFilter, setActiveAlertFilter] = useState("All");
+  
+
+{/* ------------------  ALERTS DATA  ------------------ */}
+const alertsData = [
+  {
+    id: 1,
+    type: "Critical", 
+    title: "Rent Payment Overdue",
+    description: "Monthly rent payment is 3 days overdue. Immediate action required.",
+    date: "2024-08-20",
+    amount: "$12,000",
+    status: "Unread",
+    tags: ["New", "Overdue"],
+    icon: "AlertCircle",
+    iconColor: "#dc2626",
+    iconBg: "#fef2f2",
+    bgColor: "#fef2f2",
+    borderColor: "#fecaca",
+    tagColor: "#dc2626"
+  },
+  {
+    id: 2,
+    type: "Warning",
+    title: "Electricity Expenses Spike",
+    description: "Electricity expenses increased by 40% compared to last month.",
+    date: "2024-08-22",
+    amount: "$4,500",
+    change: "+40%",
+    status: "Unread",
+    tags: ["New", "Spike"],
+    icon: "Zap",
+    iconColor: "#d97706",
+    iconBg: "#fef3c7",
+    bgColor: "#fffbeb",
+    borderColor: "#fde68a",
+    tagColor: "#d97706"
+  },
+  {
+    id: 3,
+    type: "Warning",
+    title: "Equipment Budget Alert",
+    description: "Equipment expenses have reached 85% of the monthly budget.",
+    date: "2024-08-21",
+    amount: "$3,100",
+    percentage: "85%",
+    status: "Warning",
+    tags: ["Budget"],
+    icon: "Package",
+    iconColor: "#d97706",
+    iconBg: "#fef3c7",
+    bgColor: "#fffbeb",
+    borderColor: "#fde68a",
+    tagColor: "#d97706"
+  },
+  {
+    id: 4,
+    type: "Info",
+    title: "New Expense Policy",
+    description: "Updated expense reporting policy requires receipts for all expenses over $50.",
+    date: "2024-08-19",
+    
+    tags: ["Policy"],
+    icon: "Info",
+    iconColor: "#2563eb",
+    iconBg: "#dbeafe",
+    bgColor: "#eff6ff",
+    borderColor: "#bfdbfe",
+    tagColor: "#2563eb"
+  },
+  {
+    id: 5,
+    type: "Success",
+    title: "Travel Expenses Reduced",
+    description: "Travel expenses decreased by 20% this month, saving $300.",
+    date: "2024-08-18",
+    amount: "$1,200",
+    change: "-20%",
+    status: "Read",
+    tags: ["Savings"],
+    icon: "CheckCircle",
+    iconColor: "#059669",
+    iconBg: "#d1fae5",
+    bgColor: "#f0fdf4",
+    borderColor: "#bbf7d0",
+    tagColor: "#059669"
+  },
+  {
+    id: 6,
+    type: "Warning",
+    title: "Office Supplies Increase",
+    description: "Office supplies expenses are 35% higher than average.",
+    date: "2024-08-17",
+    amount: "$2,800",
+    change: "+35%",
+    status: "Unread",
+    tags: ["New", "Spike"],
+    icon: "Package",
+    iconColor: "#d97706",
+    iconBg: "#fef3c7",
+    bgColor: "#fffbeb",
+    borderColor: "#fde68a",
+    tagColor: "#d97706"
+  },
+  {
+    id: 7,
+    type: "Info",
+    title: "Monthly Budget Summary",
+    description: "You have used 78% of your total monthly budget.",
+    date: "2024-08-16",
+    percentage: "78%",
+    status: "Read",
+    tags: ["Budget"],
+    icon: "BarChart3",
+    iconColor: "#2563eb",
+    iconBg: "#dbeafe",
+    bgColor: "#eff6ff",
+    borderColor: "#bfdbfe",
+    tagColor: "#2563eb"
+  }
+];
+
+
 
 const handleCategoryToggle = (category) => {
   setSelectedCategories(prev => ({
@@ -424,7 +578,7 @@ const pieData = categoryData.map(item => ({
         <StatCard label="Approved" value="2" Icon={CheckCircle} iconColor="#10b981">
           <p style={{ margin: 0 }}>This month</p>
         </StatCard>
-        <StatCard label="Budget Usage" value="68%" Icon={BarChart3} iconColor="#8b5cf6">
+        <StatCard label="Budget Usage" value="68%" Icon={Receipt} iconColor="#8b5cf6">
           <p style={{ margin: 0 }}>Of monthly limit</p>
         </StatCard>
       </div>
@@ -478,6 +632,7 @@ const pieData = categoryData.map(item => ({
             amount: 45.5,
             status: "approved",
             receipt: "RCP-2024-001",
+            statusIcon :statusIcon.approved
           },
           {
             date: "2024-08-22",
@@ -486,6 +641,7 @@ const pieData = categoryData.map(item => ({
             amount: 85.75,
             status: "pending",
             receipt: "RCP-2024-002",
+            statusIcon :statusIcon.pending
           },
           {
             date: "2024-08-21",
@@ -494,6 +650,7 @@ const pieData = categoryData.map(item => ({
             amount: 28.5,
             status: "approved",
             receipt: "RCP-2024-003",
+            statusIcon :statusIcon.approved
           },
           {
             date: "2024-08-20",
@@ -502,6 +659,7 @@ const pieData = categoryData.map(item => ({
             amount: 299.0,
             status: "rejected",
             receipt: "RCP-2024-004",
+            statusIcon :statusIcon.rejected
           }
         ].map((item, i) => (
           <TableRow key={i} {...item} />
@@ -513,10 +671,10 @@ const pieData = categoryData.map(item => ({
         <h3 style={h3Style}>Quick Actions</h3>
         <p style={pMuted}>Common tasks and shortcuts</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
-          <QuickAction label="Upload Receipt" Icon={Upload} color="#6366f1" onClick={() => setActiveItem("Upload")} />
-          <QuickAction label="Quick Capture" Icon={Camera} color="#10b981" onClick={() => setActiveItem("Camera")} />
-          <QuickAction label="View Reports" Icon={BarChart3} color="#f59e0b" onClick={() => setActiveItem("Reports")} />
-          <QuickAction label="Schedule Reminder" Icon={Bell} color="#8b5cf6" onClick={() => setActiveItem("Alerts")} />
+          <QuickAction label="Upload Receipt" Icon={Upload}  onClick={() => setActiveItem("Upload")}/>
+          <QuickAction label="Quick Capture" Icon={Camera}  onClick={() => setActiveItem("Camera")}/>
+          <QuickAction label="View Reports" Icon={Receipt}  onClick={() => setActiveItem("Reports")}/>
+          <QuickAction label="Schedule Reminder" Icon={Calendar}  onClick={() => setActiveItem("Alerts")}/>
         </div>
       </div>
     </div>
@@ -1980,28 +2138,394 @@ const pieData = categoryData.map(item => ({
 )}
 
       {activeItem === "Alerts" && (
-        <div style={cardStyle}>
-          <h3 style={h3Style}>Alerts & Notifications</h3>
-          <p style={pMuted}>Manage your expense alerts and notifications</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#fef3c7", borderRadius: "8px" }}>
-              <AlertTriangle size={20} color="#f59e0b" />
-              <div>
-                <p style={{ margin: "0 0 4px 0", fontWeight: "500" }}>Budget Alert</p>
-                <p style={{ margin: 0, fontSize: "14px", color: "#6b7280" }}>You're approaching your monthly limit</p>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#dbeafe", borderRadius: "8px" }}>
-              <Bell size={20} color="#3b82f6" />
-              <div>
-                <p style={{ margin: "0 0 4px 0", fontWeight: "500" }}>Reminder</p>
-                <p style={{ margin: 0, fontSize: "14px", color: "#6b7280" }}>Submit your weekly expenses</p>
-              </div>
-            </div>
+  <div style={{ width: "100%" }}>
+    {/* Header */}
+    <div style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: "10px"
+    }}>
+      <div>
+      
+      </div>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button
+          style={{
+            padding: "10px 16px",
+            border: "1px solid #d1d5db",
+            borderRadius: "8px",
+            background: "#fff",
+            fontSize: "14px",
+            color: "#374151",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontWeight: "500"
+          }}
+        >
+          
+          Mark All Read
+        </button>
+        <button
+          style={{
+            padding: "10px 16px",
+            border: "1px solid #d1d5db",
+            borderRadius: "8px",
+            background: "#fff",
+            fontSize: "14px",
+            color: "#374151",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontWeight: "500"
+          }}
+        >
+          
+          Settings
+        </button>
+      </div>
+    </div>
+
+    {/* Alert Stats Cards */}
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: "24px",
+      marginBottom: "32px"
+    }}>
+      {/* Total Alerts */}
+      <div style={{
+        ...cardStyle,
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "20px"
+      }}>
+        <div style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "12px",
+          background: "#f5f5f5ff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <AlertTriangle size={24} color="#4d4d4dff" />
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "700", color: "#1f2937" }}>
+            {alertsData.length}
           </div>
+          <div style={{ fontSize: "14px", color: "#6b7280", fontWeight: "500" }}>Total Alerts</div>
+        </div>
+      </div>
+
+      {/* Unread */}
+      <div style={{
+        ...cardStyle,
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "20px"
+      }}>
+        <div style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "12px",
+          background: "#dbeafe",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <Clock4 size={24} color="#2563eb" />
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "700", color: "#1f2937" }}>
+            {alertsData.filter(alert => alert.status === "Unread").length}
+          </div>
+          <div style={{ fontSize: "14px", color: "#6b7280", fontWeight: "500" }}>Unread</div>
+        </div>
+      </div>
+
+      {/* Critical */}
+      <div style={{
+        ...cardStyle,
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "20px"
+      }}>
+        <div style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "12px",
+          background: "#fef2f2",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <CircleX size={24} color="#dc2626" />
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "700", color: "#1f2937" }}>
+            {alertsData.filter(alert => alert.type === "Critical").length}
+          </div>
+          <div style={{ fontSize: "14px", color: "#6b7280", fontWeight: "500" }}>Critical</div>
+        </div>
+      </div>
+
+      {/* Warnings */}
+      <div style={{
+        ...cardStyle,
+        display: "flex",
+        alignItems: "center",
+        gap: "16px",
+        padding: "20px"
+      }}>
+        <div style={{
+          width: "48px",
+          height: "48px",
+          borderRadius: "12px",
+          background: "#fef3c7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <AlertTriangle size={24} color="#d97706" />
+        </div>
+        <div>
+          <div style={{ fontSize: "28px", fontWeight: "700", color: "#1f2937" }}>
+            {alertsData.filter(alert => alert.type === "Warning").length}
+          </div>
+          <div style={{ fontSize: "14px", color: "#6b7280", fontWeight: "500" }}>Warnings</div>
+        </div>
+      </div>
+    </div>
+
+    {/* Recent Alerts */}
+    <div style={cardStyle}>
+      <h3 style={{
+        fontSize: "18px",
+        fontWeight: "600",
+        color: "#1f2937",
+        margin: "0 0 8px 0"
+      }}>
+        Recent Alerts
+      </h3>
+      <p style={{
+        color: "#6b7280",
+        fontSize: "14px",
+        margin: "0 0 24px 0"
+      }}>
+        Latest notifications and expense anomalies
+      </p>
+
+      {/* Filter Tabs */}
+      <div style={{
+        display: "flex",
+        gap: "32px",
+        marginBottom: "24px",
+        borderBottom: "1px solid #f1f5f9",
+        paddingBottom: "16px"
+      }}>
+        {[
+          { key: "All", count: alertsData.length },
+          { key: "Unread", count: alertsData.filter(a => a.status === "Unread").length },
+          { key: "Critical", count: alertsData.filter(a => a.type === "Critical").length },
+          { key: "Warning", count: alertsData.filter(a => a.type === "Warning").length }
+        ].map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveAlertFilter(tab.key)}
+            style={{
+              background: "none",
+              border: "none",
+              color: activeAlertFilter === tab.key ? "#1f2937" : "#6b7280",
+              fontSize: "14px",
+              fontWeight: activeAlertFilter === tab.key ? "600" : "500",
+              cursor: "pointer",
+              borderBottom: activeAlertFilter === tab.key ? "2px solid #6366f1" : "2px solid transparent",
+              paddingBottom: "14px",
+              transition: "all 0.2s ease"
+            }}
+          >
+            {tab.key} ({tab.count})
+          </button>
+        ))}
+      </div>
+
+      {/* Alert Items - Filtered */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        {alertsData
+          .filter(alert => {
+            if (activeAlertFilter === "All") return true;
+            if (activeAlertFilter === "Unread") return alert.status === "Unread";
+            if (activeAlertFilter === "Critical") return alert.type === "Critical";
+            if (activeAlertFilter === "Warning") return alert.type === "Warning";
+            return true;
+          })
+          .map(alert => {
+            const IconComponent = {
+              AlertCircle,
+              Zap,
+              Package,
+              Info,
+              CheckCircle,
+              BarChart3
+            }[alert.icon];
+
+            return (
+              <div
+                key={alert.id}
+                style={{
+                  border: `1px solid ${alert.borderColor}`,
+                  borderRadius: "12px",
+                  padding: "20px",
+                  background: alert.bgColor,
+                  transition: "all 0.2s ease",
+                  cursor: "pointer"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-1px)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
+                  <div style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: alert.iconBg,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    border: `2px solid ${alert.iconColor}20`
+                  }}>
+                    <IconComponent size={20} color={alert.iconColor} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                      <h4 style={{ 
+                        margin: 0, 
+                        fontSize: "16px", 
+                        fontWeight: "600", 
+                        color: "#1f2937"
+                      }}>
+                        {alert.title}
+                      </h4>
+                      {alert.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          style={{
+                            background: alert.tagColor,
+                            color: "#fff",
+                            padding: "4px 8px",
+                            borderRadius: "12px",
+                            fontSize: "12px",
+                            fontWeight: "600"
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <p style={{ 
+                      margin: "0 0 12px 0", 
+                      fontSize: "14px", 
+                      color: "#6b7280",
+                      lineHeight: "1.6"
+                    }}>
+                      {alert.description}
+                    </p>
+                    <div style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "20px", 
+                      fontSize: "13px", 
+                      color: "#9ca3af" 
+                    }}>
+                      <span style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "6px",
+                        fontWeight: "500"
+                      }}>
+                        <Calendar size={14} />
+                        {alert.date}
+                      </span>
+                      {alert.amount && (
+                        <span style={{ fontWeight: "600", color: "#374151" }}>
+                          {alert.amount}
+                        </span>
+                      )}
+                      {alert.change && (
+                        <span style={{ 
+                          color: alert.change.startsWith('+') ? "#dc2626" : "#059669",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          fontWeight: "600"
+                        }}>
+                          {alert.change.startsWith('+') ? 
+                            <TrendingUp size={14} /> : 
+                            <TrendingDown size={14} />
+                          }
+                          {alert.change}
+                        </span>
+                      )}
+                      {alert.percentage && (
+                        <span style={{ 
+                          color: "#059669", 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: "4px",
+                          fontWeight: "600"
+                        }}>
+                          <BarChart3 size={14} />
+                          {alert.percentage}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+      </div>
+
+      {/* Show message if no alerts match filter */}
+      {alertsData.filter(alert => {
+        if (activeAlertFilter === "All") return true;
+        if (activeAlertFilter === "Unread") return alert.status === "Unread";
+        if (activeAlertFilter === "Critical") return alert.type === "Critical";
+        if (activeAlertFilter === "Warning") return alert.type === "Warning";
+        return true;
+      }).length === 0 && (
+        <div style={{
+          textAlign: "center",
+          padding: "40px 20px",
+          color: "#6b7280"
+        }}>
+          <Bell size={48} color="#d1d5db" style={{ marginBottom: "16px" }} />
+          <p style={{ margin: 0, fontSize: "16px" }}>
+            No {activeAlertFilter.toLowerCase()} alerts found
+          </p>
         </div>
       )}
+    </div>
+  </div>
+)}
 
+
+      
       {activeItem === "AI Assistant" && (
         <div style={cardStyle}>
           <h3 style={h3Style}>AI Assistant</h3>
@@ -2081,22 +2605,17 @@ const pieData = categoryData.map(item => ({
           {showProfile && (
             <div style={profileDropdown}>
               <div style={{ padding: "12px", borderBottom: "1px solid #f1f5f9" }}>
-                <p style={{ fontWeight: "600", margin: "0 0 4px 0" }}>Safwan ALKhazaleh</p>
-                <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 4px 0" }}>safwan@email.com</p>
-                <p style={{ fontSize: "13px", color: "#6366f1", fontWeight: "500", margin: 0 }}>Administrator</p>
+
               </div>
               <div>
                 <button style={profileItem} onClick={() => setShowProfile(false)}>
-                  <FileText size={16} />
+                  <User size={16} />
                   Profile
                 </button>
-                <button style={profileItem} onClick={() => setShowProfile(false)}>
-                  <Settings size={16} />
-                  Settings
-                </button>
+                
                 <button style={profileItem} onClick={() => window.location.href = "/"}>
                   <LogOut size={16} />
-                  Logout
+                  <span style={{ color: "#ff0000ff"}}>Logout</span>
                 </button>
               </div>
             </div>
@@ -2262,7 +2781,9 @@ const TableHeader = () => (
   </div>
 );
 
-const TableRow = ({ date, desc, cat, amount, status, receipt }) => (
+
+
+const TableRow = ({ date, desc, cat, amount, status, receipt,statusIcon }) => (
   <div
     style={{
       display: "grid",
@@ -2276,14 +2797,11 @@ const TableRow = ({ date, desc, cat, amount, status, receipt }) => (
     <span style={{ fontSize: "14px" }}>{desc}</span>
     <span style={{ fontSize: "14px" }}>{cat}</span>
     <span style={{ fontSize: "14px", fontWeight: "600" }}>${amount.toFixed(2)}</span>
-    <span style={{
-      fontSize: "14px",
-      fontWeight: "600",
-      color: status === "approved" ? "#10b981" : status === "pending" ? "#f59e0b" : "#ef4444",
-      textTransform: "capitalize"
-    }}>
+    <div >
+  {statusIcon}
       {status}
-    </span>
+    </div>
+    
     <span style={{ fontSize: "14px", color: "#6b7280" }}>{receipt}</span>
   </div>
 );
@@ -2313,7 +2831,7 @@ const QuickAction = ({ label, Icon, color, onClick }) => (
       e.currentTarget.style.transform = "translateY(0)";
     }}
   >
-    <Icon size={24} style={{ color }} />
+    <Icon size={15} style={{ color }} />
     <div style={{ fontSize: "14px", fontWeight: "500", color: "#374151" }}>{label}</div>
   </button>
 );
@@ -2349,12 +2867,12 @@ const avatar = {
   width: "40px",
   height: "40px",
   borderRadius: "50%",
-  background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
+  background: "linear-gradient(135deg,  #00ffaa5e )",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   fontWeight: "600",
-  color: "#fff",
+  color: "#7446465d",
   fontSize: "14px"
 };
 
