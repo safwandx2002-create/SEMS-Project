@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function isValidEmail(email) {
   return /^[\w.-]+@(gmail\.com|hotmail\.com|yahoo\.com)$/i.test(email);
 }
 
 const LoginSignup = () => {
+  const navigate = useNavigate();
+  
   const [action, setAction] = useState("login");
   const [formData, setFormData] = useState({
     name: "",
@@ -90,7 +93,8 @@ const LoginSignup = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       if (action === "login") {
-        alert("Login successful! Redirecting to dashboard...");
+        
+        navigate("/dashboard");
       } else {
         setAction("login");
         setFormData({ name: "", email: "", password: "", confirmPassword: "" });
@@ -1031,4 +1035,3 @@ const LoginSignup = () => {
 };
 
 export default LoginSignup;
-// testing commit1
