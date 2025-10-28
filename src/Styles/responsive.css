@@ -1,0 +1,615 @@
+/* ============================================
+   RESPONSIVE STYLES FOR ALL DEVICES
+   Mobile First Approach
+   ============================================ */
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   MOBILE (< 768px) - iPhone, Galaxy, etc.
+   ============================================ */
+@media (max-width: 767px) {
+  /* Typography */
+  h1 {
+    font-size: 20px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 8px !important;
+  }
+
+  h2 {
+    font-size: 18px !important;
+  }
+
+  h3 {
+    font-size: 16px !important;
+  }
+
+  p {
+    font-size: 13px !important;
+  }
+
+  /* Buttons */
+  button {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    white-space: nowrap;
+  }
+
+  /* Cards */
+  div[style*="borderRadius"] {
+    border-radius: 12px !important;
+    padding: 16px !important;
+  }
+
+  /* Grid Layouts - 1 Column */
+  div[style*="display: grid"],
+  div[style*="display: \"grid\""] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Flex Layouts - Stack Vertically */
+  div[style*="display: flex"],
+  div[style*="display: \"flex\""] {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+  }
+
+  /* Tables */
+  table {
+    font-size: 12px !important;
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  th, td {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+  }
+
+  /* Charts */
+  div[style*="height: \"250px\""],
+  div[style*="height: \"300px\""],
+  div[style*="height: \"400px\""] {
+    height: 180px !important;
+    min-height: 180px !important;
+  }
+
+  /* Dashboard Layout */
+  div[style*="display: \"flex\""][style*="minHeight: \"100vh\""] {
+    flex-direction: column !important;
+    position: relative !important;
+  }
+
+  /* Sidebar - Bottom Navigation */
+  nav[style*="width: \"260px\""],
+  nav[style*="width: \"250px\""],
+  aside {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    z-index: 9999 !important;
+    padding: 8px 12px !important;
+    border-top: 1px solid #e5e7eb !important;
+    border-right: none !important;
+    background: #ffffff !important;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1) !important;
+    overflow-x: auto !important;
+  }
+
+  /* Hide Sidebar Logo */
+  nav > div:first-child,
+  nav > a:first-child,
+  nav h2,
+  nav h3 {
+    display: none !important;
+  }
+
+  /* Sidebar Menu - Horizontal */
+  nav ul,
+  nav > ul,
+  aside > ul {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    gap: 4px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+
+  nav li,
+  aside li {
+    margin: 0 !important;
+    padding: 8px 10px !important;
+    flex: 1 !important;
+    min-width: 60px !important;
+    max-width: 80px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+
+  /* Hide Menu Text, Show Icons Only */
+  nav li > span:last-child,
+  nav li > div:last-child,
+  aside li > span:last-child {
+    display: none !important;
+  }
+
+  /* Menu Icons */
+  nav li svg,
+  aside li svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Active Menu Item */
+  nav li[style*="background"],
+  aside li[style*="background"] {
+    border-radius: 8px !important;
+  }
+
+  /* Main Content */
+  main,
+  main[style*="marginLeft"],
+  div[style*="marginLeft: \"260px\""] {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding: 16px 12px 80px 12px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Header Section */
+  header,
+  div[style*="display: \"flex\""][style*="justifyContent: \"space-between\""] {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* Header Buttons */
+  header button,
+  div[style*="display: \"flex\""][style*="gap: \"12px\""] > button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Stat Cards - 2 Columns */
+  div[style*="gridTemplateColumns: \"repeat(4, 1fr)\""] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Stat Card Content */
+  div[style*="fontSize: \"32px\""] {
+    font-size: 24px !important;
+  }
+
+  div[style*="fontSize: \"14px\""] {
+    font-size: 12px !important;
+  }
+
+  /* Expense Trend & Budget - Stack */
+  div[style*="gridTemplateColumns: \"2fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Budget Bars */
+  div[style*="display: \"flex\""][style*="marginTop: \"12px\""] {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+  }
+
+  /* Filter Section */
+  div[style*="gridTemplateColumns: \"2fr 1fr 1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Search Input */
+  input[type="text"] {
+    font-size: 14px !important;
+    padding: 10px 12px 10px 36px !important;
+  }
+
+  /* Select Dropdowns */
+  select {
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Table Container */
+  div[style*="overflowX: \"auto\""] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin: 0 -12px !important;
+    padding: 0 12px !important;
+  }
+
+  /* Table */
+  table {
+    min-width: 800px !important;
+  }
+
+  /* Action Buttons in Table */
+  td button {
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Upload Buttons */
+  button[style*="display: \"flex\""] {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Tabs */
+  div[style*="display: \"flex\""][style*="borderBottom"] button {
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Category Grid */
+  div[style*="gridTemplateColumns: \"1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Pie Chart */
+  div[style*="width: \"300px\""] {
+    width: 100% !important;
+    max-width: 250px !important;
+    margin: 0 auto !important;
+  }
+
+  /* Expense Cards */
+  div[style*="padding: \"24px\""] {
+    padding: 16px !important;
+  }
+
+  /* Upload Container */
+  div[style*="maxWidth: \"600px\""] {
+    max-width: 100% !important;
+    padding: 16px 12px !important;
+  }
+
+  /* Form */
+  form {
+    gap: 12px !important;
+  }
+
+  /* File Upload Area */
+  div[style*="border: \"2px dashed\""] {
+    padding: 20px 12px !important;
+  }
+
+  /* Camera Video */
+  video {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 300px !important;
+  }
+
+  /* Modals */
+  div[style*="position: \"fixed\""][style*="inset: \"0\""] {
+    padding: 12px !important;
+    align-items: flex-end !important;
+  }
+
+  div[style*="maxWidth: \"500px\""],
+  div[style*="maxWidth: \"600px\""] {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+
+  div[style*="display: \"flex\""][style*="marginBottom: \"24px\""] {
+    margin-bottom: 16px !important;
+  }
+
+  div[style*="display: \"flex\""][style*="justifyContent: \"flex-end\""] {
+    flex-direction: column-reverse !important;
+    gap: 10px !important;
+  }
+
+  div[style*="display: \"flex\""][style*="justifyContent: \"flex-end\""] button {
+    width: 100% !important;
+  }
+
+  /* Toast Notifications */
+  .Toastify__toast-container {
+    width: calc(100% - 24px) !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 70px !important;
+    padding: 0 !important;
+  }
+
+  .Toastify__toast {
+    font-size: 13px !important;
+    padding: 12px 16px !important;
+    margin-bottom: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Touch Targets */
+  button,
+  a[role="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px !important;
+  }
+
+  /* Tap Highlight */
+  * {
+    -webkit-tap-highlight-color: rgba(99, 102, 241, 0.1);
+  }
+
+  /* Prevent Zoom on Input Focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ============================================
+   TABLET (768px - 1023px) - iPad, Galaxy Tab
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Typography */
+  h1 {
+    font-size: 24px !important;
+    line-height: 1.3 !important;
+  }
+
+  h2 {
+    font-size: 20px !important;
+  }
+
+  h3 {
+    font-size: 18px !important;
+  }
+
+  /* Buttons */
+  button {
+    font-size: 14px !important;
+    padding: 12px 16px !important;
+  }
+
+  /* Cards */
+  div[style*="borderRadius"] {
+    padding: 20px !important;
+  }
+
+  /* Sidebar */
+  nav[style*="width: \"260px\""],
+  nav[style*="width: \"250px\""] {
+    width: 220px !important;
+  }
+
+  nav li {
+    padding: 12px 16px !important;
+  }
+
+  nav li span {
+    font-size: 14px !important;
+  }
+
+  /* Main Content */
+  main[style*="marginLeft: \"260px\""] {
+    margin-left: 220px !important;
+    padding: 20px !important;
+  }
+
+  /* Grid Layouts - 2 Columns */
+  div[style*="gridTemplateColumns: \"repeat(4, 1fr)\""] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  div[style*="gridTemplateColumns: \"repeat(3, 1fr)\""] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  /* Expense Trend & Budget - Stack */
+  div[style*="gridTemplateColumns: \"2fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Filter Section - 2 Columns */
+  div[style*="gridTemplateColumns: \"2fr 1fr 1fr 1fr\""] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Tables */
+  table {
+    font-size: 13px !important;
+  }
+
+  th, td {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+
+  /* Table Container */
+  div[style*="overflowX: \"auto\""] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Charts */
+  div[style*="height: \"250px\""],
+  div[style*="height: \"300px\""] {
+    height: 220px !important;
+  }
+
+  /* Stat Cards */
+  div[style*="fontSize: \"32px\""] {
+    font-size: 28px !important;
+  }
+
+  /* Category Grid - 1 Column */
+  div[style*="gridTemplateColumns: \"1fr 1fr\""] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Header Buttons - Wrap */
+  div[style*="display: \"flex\""][style*="gap: \"12px\""] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Pie Chart */
+  div[style*="width: \"300px\""] {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+
+  /* Modals */
+  div[style*="position: \"fixed\""][style*="inset: \"0\""] {
+    padding: 20px !important;
+  }
+
+  div[style*="maxWidth: \"500px\""],
+  div[style*="maxWidth: \"600px\""] {
+    max-width: 90% !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* Toast Notifications */
+  .Toastify__toast-container {
+    width: calc(100% - 40px) !important;
+    left: 20px !important;
+    right: 20px !important;
+  }
+
+  .Toastify__toast {
+    font-size: 14px !important;
+    padding: 14px 18px !important;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+/* ============================================
+   LANDSCAPE ORIENTATION (TABLET & MOBILE)
+   ============================================ */
+@media (max-width: 1023px) and (orientation: landscape) {
+  div[style*="height: \"220px\""],
+  div[style*="height: \"250px\""],
+  div[style*="height: \"180px\""] {
+    height: 150px !important;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY (ALL DEVICES)
+   ============================================ */
+@media (max-width: 1023px) {
+  button,
+  a[role="button"] {
+    min-height: 44px !important;
+  }
+
+  * {
+    -webkit-tap-highlight-color: rgba(99, 102, 241, 0.1);
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  nav,
+  aside,
+  button,
+  .hide-print {
+    display: none !important;
+  }
+
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  * {
+    box-shadow: none !important;
+  }
+}
