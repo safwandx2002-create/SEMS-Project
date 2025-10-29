@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Filter, TrendingUp, TrendingDown, Circle, RefreshCw, AlertTriangle, DollarSign } from 'lucide-react';
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { cardStyle, h3Style, pMuted, buttonSecondary } from '../styles/styles';
+import { Download, Filter, TrendingUp, TrendingDown, RefreshCw, AlertTriangle } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import StackedAreaChart from '../components/charts/StackedAreaChart'; // ✅ المسار الصحيح
+import { cardStyle, h3Style, pMuted } from '../styles/styles';
 
 const Reports = ({ expensesList, handleExport }) => {
   // Temporary filter states (before clicking Update)
@@ -675,118 +676,7 @@ const Reports = ({ expensesList, handleExport }) => {
             m.Rent > 0 || m.Utilities > 0 || m['Office Supplies'] > 0 || 
             m.Equipment > 0 || m.Travel > 0 || m.Meals > 0
           ) ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyTrend}>
-                <defs>
-                  <linearGradient id="colorRent" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorUtilities" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorOfficeSupplies" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorEquipment" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorTravel" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.4}/>
-                  </linearGradient>
-                  <linearGradient id="colorMeals" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#636363" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#636363" stopOpacity={0.4}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-                <XAxis 
-                  dataKey="month" 
-                  stroke="#6b7280"
-                  style={{ fontSize: "13px" }}
-                  tickLine={false}
-                />
-                <YAxis 
-                  stroke="#6b7280"
-                  style={{ fontSize: "13px" }}
-                  tickLine={false}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                  width={70}
-                />
-                <Tooltip
-                  formatter={(value, name) => [`$${value.toLocaleString()}`, name]}
-                  contentStyle={{
-                    background: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "10px",
-                    padding: "12px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                  }}
-                  labelStyle={{ fontWeight: "600", marginBottom: "8px", color: "#1f2937" }}
-                />
-                <Legend 
-                  wrapperStyle={{ 
-                    fontSize: '13px', 
-                    paddingTop: '16px',
-                    fontWeight: "500"
-                  }}
-                  iconType="rect"
-                  iconSize={14}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Rent" 
-                  stackId="1" 
-                  stroke="#6366f1" 
-                  fill="url(#colorRent)" 
-                  strokeWidth={2}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Utilities" 
-                  stackId="1" 
-                  stroke="#10b981" 
-                  fill="url(#colorUtilities)" 
-                  strokeWidth={2}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Office Supplies" 
-                  stackId="1" 
-                  stroke="#f59e0b" 
-                  fill="url(#colorOfficeSupplies)" 
-                  strokeWidth={2}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Equipment" 
-                  stackId="1" 
-                  stroke="#8b5cf6" 
-                  fill="url(#colorEquipment)" 
-                  strokeWidth={2}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Travel" 
-                  stackId="1" 
-                  stroke="#ef4444" 
-                  fill="url(#colorTravel)" 
-                  strokeWidth={2}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="Meals" 
-                  stackId="1" 
-                  stroke="#636363" 
-                  fill="url(#colorMeals)" 
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <StackedAreaChart data={monthlyTrend} height={400} />
           ) : (
             <div style={{ 
               height: "100%", 
@@ -798,7 +688,7 @@ const Reports = ({ expensesList, handleExport }) => {
               flexDirection: "column",
               gap: "12px"
             }}>
-              <DollarSign size={48} color="#d1d5db" />
+              <Download size={48} color="#d1d5db" />
               <p style={{ margin: 0 }}>No expense data available for the selected period</p>
             </div>
           )}
@@ -903,7 +793,7 @@ const Reports = ({ expensesList, handleExport }) => {
             </>
           ) : (
             <div style={{ textAlign: "center", padding: "60px 20px", color: "#9ca3af", fontSize: "14px" }}>
-              <Circle size={40} color="#d1d5db" style={{ marginBottom: "12px" }} />
+              <Download size={40} color="#d1d5db" style={{ marginBottom: "12px" }} />
               <p style={{ margin: 0 }}>No expense data for selected period</p>
             </div>
           )}
