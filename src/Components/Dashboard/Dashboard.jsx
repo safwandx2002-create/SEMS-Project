@@ -20,7 +20,12 @@ function Dashboard() {
   /* ==================== STATE MANAGEMENT ==================== */
   const [activeItem, setActiveItem] = useState("My Expenses");
   const [showProfile, setShowProfile] = useState(false);
-  const [alerts, setAlerts] = useState([]); // ✅ إضافة هذا السطر
+  
+  // ✅ Load alerts from localStorage
+  const [alerts, setAlerts] = useState(() => {
+    const savedAlerts = localStorage.getItem('sems_alerts');
+    return savedAlerts ? JSON.parse(savedAlerts) : [];
+  });
   
   // Define status icons
   const statusIcon = {
@@ -29,13 +34,25 @@ function Dashboard() {
     rejected: <CircleX size={16} color="#dc2626" />,
   };
 
-  // Add statusIcon to initial expenses
-  const expensesWithIcons = initialExpensesList.map(exp => ({
-    ...exp,
-    statusIcon: statusIcon[exp.status]
-  }));
+  // ✅ Load expenses from localStorage or use initial data
+  const [expensesList, setExpensesList] = useState(() => {
+    const savedExpenses = localStorage.getItem('sems_expenses');
+    if (savedExpenses) {
+      const parsed = JSON.parse(savedExpenses);
+      // Re-attach status icons after parsing
+      return parsed.map(exp => ({
+        ...exp,
+        statusIcon: statusIcon[exp.status]
+      }));
+    }
+    
+    // If no saved data, use initial data with icons
+    return initialExpensesList.map(exp => ({
+      ...exp,
+      statusIcon: statusIcon[exp.status]
+    }));
+  });
 
-  const [expensesList, setExpensesList] = useState(expensesWithIcons);
   const [selectedFile, setSelectedFile] = useState(null);
   const [showProcessedModal, setShowProcessedModal] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -56,6 +73,19 @@ function Dashboard() {
   const timeoutRefs = useRef([]);
 
   const navItems = ["My Expenses", "Data Overview", "Upload", "Camera", "Reports", "Alerts"];
+
+  /* ==================== SAVE TO LOCALSTORAGE ==================== */
+  // ✅ Save expenses to localStorage whenever they change
+  useEffect(() => {
+    // Remove status icons before saving (they're React elements and can't be stringified)
+    const expensesToSave = expensesList.map(({ statusIcon, ...rest }) => rest);
+    localStorage.setItem('sems_expenses', JSON.stringify(expensesToSave));
+  }, [expensesList]);
+
+  // ✅ Save alerts to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('sems_alerts', JSON.stringify(alerts));
+  }, [alerts]);
 
   /* ==================== CLEANUP ON UNMOUNT ==================== */
   useEffect(() => {
@@ -153,11 +183,9 @@ function Dashboard() {
     const today = new Date();
     const minDate = new Date('1900-01-01');
     
-    // Reset time to compare only dates
     today.setHours(23, 59, 59, 999);
     date.setHours(0, 0, 0, 0);
     
-    // Check if date is valid and within range
     return date instanceof Date && 
            !isNaN(date) && 
            date >= minDate && 
@@ -166,7 +194,6 @@ function Dashboard() {
 
   /* ==================== SAVE EXPENSE WITH VALIDATION ==================== */
   const handleSaveExpense = () => {
-    // Validate date
     if (!expenseFormData.date) {
       alert("❌ Please select a date.");
       return;
@@ -183,14 +210,12 @@ function Dashboard() {
       return;
     }
     
-    // ✅ Validate amount - منع الصفر والسالب
     const amount = parseFloat(expenseFormData.amount);
     if (!expenseFormData.amount || isNaN(amount) || amount <= 0) {
       alert("❌ Please enter a valid amount greater than 0.");
       return;
     }
     
-    // Validate category
     if (!expenseFormData.category || expenseFormData.category === "") {
       alert("❌ Please select a category.");
       return;
@@ -200,7 +225,7 @@ function Dashboard() {
       date: expenseFormData.date,
       desc: expenseFormData.description || "No description provided",
       cat: expenseFormData.category,
-      amount: amount,  // ✅ Already validated as positive
+      amount: amount,
       status: "pending",
       receipt: `RCP-${new Date().getFullYear()}-${String(expensesList.length + 1).padStart(3, "0")}`,
       statusIcon: statusIcon.pending,
@@ -208,6 +233,7 @@ function Dashboard() {
     };
 
     setExpensesList([newExpense, ...expensesList]);
+    checkBudgetAlerts(newExpense); // ✅ Check budget after adding
     setShowProcessedModal(false);
     setSelectedFile(null);
     setCapturedImage(null);
@@ -288,29 +314,18 @@ function Dashboard() {
     }
   };
 
-  /* ==================== HANDLE SAVE CAPTURED IMAGE ==================== */
   const handleSaveCaptured = (imageData) => {
-    console.log("📸 Image captured:", imageData); // ✅ للتأكد من التنفيذ
-    
-    // Stop camera
     stopCamera();
-    
-    // Open expense form modal with empty fields
     setExpenseFormData({
       date: "",
       amount: "",
       category: "",
       description: "",
     });
-    
-    // Show modal
     setShowProcessedModal(true);
-    
-    // Switch to Upload tab to see the form
     setActiveItem("Upload");
   };
 
-  /* ==================== EXPORT HANDLER ==================== */
   const handleExport = (format) => {
     alert(`Exporting report as ${format}...`);
   };
@@ -329,7 +344,6 @@ function Dashboard() {
     const categoryLimit = budgetLimits[newExpense.cat];
     if (!categoryLimit) return;
 
-    // Calculate total spent in this category
     const categoryTotal = expensesList
       .filter(exp => exp.cat === newExpense.cat)
       .reduce((sum, exp) => sum + (typeof exp.amount === "number" ? exp.amount : parseFloat(exp.amount) || 0), 0);
@@ -369,7 +383,6 @@ function Dashboard() {
     }
   };
 
-  /* ==================== HANDLE ADD EXPENSE ==================== */
   const handleAddExpense = (expenseData) => {
     const newExpense = {
       ...expenseData,
@@ -378,7 +391,7 @@ function Dashboard() {
     };
     
     setExpensesList([newExpense, ...expensesList]);
-    checkBudgetAlerts(newExpense); // ✅ Add this line
+    checkBudgetAlerts(newExpense);
     setToastMessage("Expense submitted successfully!");
     const timeoutId = setTimeout(() => setToastMessage(""), 3000);
     timeoutRefs.current.push(timeoutId);
@@ -463,15 +476,11 @@ function Dashboard() {
   /* ==================== MAIN RENDER ==================== */
   return (
     <div style={{ background: "#f8fafc", minHeight: "100vh", paddingTop: "70px" }}>
-      {/* Header */}
       <Header showProfile={showProfile} setShowProfile={setShowProfile} />
 
-      {/* Main Layout */}
-      <div style={{ display: "flex", padding: "24px", gap: "24px" }}>
-        {/* Sidebar */}
+      <div className="dashboard-main" style={{ display: "flex", padding: "24px", gap: "24px" }}> {/* ✅ إضافة className */}
         <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} navItems={navItems} />
 
-        {/* Main Content */}
         <main style={{ flex: 1 }}>
           {activeItem === "My Expenses" && (
             <MyExpenses

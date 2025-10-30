@@ -1,15 +1,34 @@
-﻿.container {
+﻿/* ==================== BASE STYLES ==================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* ==================== CONTAINER ==================== */
+.container {
   display: flex;
   flex-direction: column;
   margin: auto;
   margin-top: 100px;
   background: #fff;
   padding-bottom: 30px;
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
 }
 
+/* ==================== HEADER ==================== */
 .header {
   display: flex;
   flex-direction: column;
@@ -32,11 +51,13 @@
   border-radius: 9px;
 }
 
+/* ==================== INPUTS ==================== */
 .inputs {
   margin-top: 55px;
   display: flex;
   flex-direction: column;
   gap: 25px;
+  padding: 0 20px;
 }
 
 .input {
@@ -44,7 +65,8 @@
   flex-direction: column;
   align-items: center;
   margin: auto;
-  width: 480px;
+  width: 100%;
+  max-width: 480px;
   height: auto;
   background: #eaeaea;
   border-radius: 6px;
@@ -69,6 +91,7 @@
   border-color: #4c00b4;
 }
 
+/* ==================== FORGOT PASSWORD ==================== */
 .forgot-password {
   padding-left: 62px;
   margin-top: 27px;
@@ -82,10 +105,15 @@
   font-weight: 600;
 }
 
+/* ==================== SUBMIT BUTTONS ==================== */
 .submit-container {
   display: flex;
   gap: 30px;
   margin: 60px auto 0;
+  padding: 0 20px;
+  width: 100%;
+  max-width: 480px;
+  justify-content: center;
 }
 
 .submit {
@@ -118,26 +146,191 @@
 .gray:hover {
   background: #d4d4d4;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ==================== RESPONSIVE DESIGN ==================== */
+
+/* Tablets (Portrait and Landscape) */
+@media screen and (max-width: 768px) {
   .container {
-    width: 90%;
+    width: 95%;
+    max-width: 500px;
     margin-top: 50px;
+    padding-bottom: 25px;
+  }
+
+  .header {
+    margin-top: 25px;
+  }
+
+  .text {
+    font-size: 38px;
+  }
+
+  .inputs {
+    margin-top: 40px;
+    gap: 20px;
+    padding: 0 15px;
   }
 
   .input {
-    width: 90%;
+    max-width: 100%;
+  }
+
+  .input input {
+    font-size: 17px;
+    height: 48px;
+  }
+
+  .forgot-password {
+    padding-left: 15px;
+    padding-right: 15px;
+    font-size: 16px;
+    text-align: center;
   }
 
   .submit-container {
     flex-direction: column;
     gap: 15px;
-    width: 90%;
+    margin-top: 40px;
+    padding: 0 15px;
   }
 
   .submit {
     width: 100%;
+    max-width: 100%;
+    height: 55px;
+    font-size: 17px;
+  }
+}
+
+/* Mobile (Small screens) */
+@media screen and (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .container {
+    width: 100%;
+    margin-top: 30px;
+    padding-bottom: 20px;
+    border-radius: 10px;
+  }
+
+  .header {
+    margin-top: 20px;
+    gap: 8px;
+  }
+
+  .text {
+    font-size: 32px;
+  }
+
+  .underline {
+    width: 50px;
+    height: 5px;
+  }
+
+  .inputs {
+    margin-top: 30px;
+    gap: 18px;
+    padding: 0 10px;
+  }
+
+  .input input {
+    font-size: 16px;
+    height: 45px;
+    padding-left: 15px;
+  }
+
+  .forgot-password {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 20px;
+    font-size: 15px;
+  }
+
+  .submit-container {
+    margin-top: 35px;
+    gap: 12px;
+    padding: 0 10px;
+  }
+
+  .submit {
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
+/* Mobile (Extra small screens) */
+@media screen and (max-width: 360px) {
+  .container {
+    margin-top: 20px;
+    padding-bottom: 15px;
+  }
+
+  .header {
+    margin-top: 15px;
+  }
+
+  .text {
+    font-size: 28px;
+  }
+
+  .underline {
+    width: 45px;
+    height: 4px;
+  }
+
+  .inputs {
+    margin-top: 25px;
+    gap: 15px;
+  }
+
+  .input input {
+    font-size: 15px;
+    height: 42px;
+    padding-left: 12px;
+  }
+
+  .forgot-password {
+    font-size: 14px;
+    margin-top: 15px;
+  }
+
+  .submit-container {
+    margin-top: 30px;
+    gap: 10px;
+  }
+
+  .submit {
+    height: 48px;
+    font-size: 15px;
+    border-radius: 40px;
+  }
+}
+
+/* Landscape mode */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .inputs {
+    margin-top: 30px;
+  }
+
+  .submit-container {
+    margin-top: 30px;
+  }
+}
+
+/* High DPI screens */
+@media screen and (-webkit-min-device-pixel-ratio: 2),
+       screen and (min-resolution: 192dpi) {
+  .input input {
+    border-width: 1.5px;
   }
 }

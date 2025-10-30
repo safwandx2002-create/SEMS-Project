@@ -1,0 +1,363 @@
+/* ==================== MOBILE & TABLET RESPONSIVE ==================== */
+
+/* Tablets and below */
+@media screen and (max-width: 1024px) {
+  /* Header adjustments */
+  .dashboard-header {
+    padding: 12px 15px !important;
+    height: 60px !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 18px !important;
+  }
+
+  /* Main layout */
+  .dashboard-main {
+    flex-direction: column !important;
+    padding: 15px !important;
+    gap: 15px !important;
+  }
+
+  /* Sidebar */
+  .dashboard-sidebar {
+    width: 100% !important;
+    position: static !important;
+    border-radius: 8px !important;
+  }
+
+  .sidebar-nav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .sidebar-nav-item {
+    flex: 1 1 calc(50% - 8px) !important;
+    min-width: 140px !important;
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Mobile screens */
+@media screen and (max-width: 768px) {
+  /* Container */
+  body {
+    padding-top: 60px !important;
+  }
+
+  /* Header */
+  .dashboard-header {
+    padding: 10px 12px !important;
+    height: 55px !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 16px !important;
+  }
+
+  .profile-section {
+    gap: 8px !important;
+  }
+
+  .profile-section img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Main content */
+  .dashboard-main {
+    padding: 12px !important;
+    gap: 12px !important;
+  }
+
+  /* Sidebar */
+  .sidebar-nav-item {
+    flex: 1 1 100% !important;
+    font-size: 14px !important;
+    padding: 12px !important;
+  }
+
+  /* Cards */
+  .card {
+    padding: 16px !important;
+  }
+
+  .card h2 {
+    font-size: 24px !important;
+  }
+
+  .card h3 {
+    font-size: 16px !important;
+  }
+
+  /* KPI Cards Grid */
+  .kpi-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  /* Budget Stats Grid */
+  .budget-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Tables */
+  .table-container {
+    overflow-x: auto !important;
+  }
+
+  table {
+    font-size: 12px !important;
+  }
+
+  table th,
+  table td {
+    padding: 10px 8px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+
+  /* Action buttons in tables */
+  .action-buttons {
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .action-buttons button {
+    width: 100% !important;
+  }
+}
+
+/* Small mobile screens */
+@media screen and (max-width: 480px) {
+  /* Header */
+  .dashboard-header {
+    padding: 8px 10px !important;
+    height: 50px !important;
+  }
+
+  .dashboard-header h1 {
+    font-size: 14px !important;
+  }
+
+  .profile-section img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Main content */
+  .dashboard-main {
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+
+  /* Cards */
+  .card {
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .card h2 {
+    font-size: 20px !important;
+  }
+
+  .card h3 {
+    font-size: 14px !important;
+  }
+
+  .card p {
+    font-size: 12px !important;
+  }
+
+  /* KPI Grid */
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Icons */
+  svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  /* Upload buttons */
+  .upload-section button {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* Sidebar */
+  .sidebar-nav-item {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+
+  /* Table scroll message */
+  .table-container::before {
+    content: "← Scroll to see more →";
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #64748b;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 360px) {
+  .dashboard-header h1 {
+    font-size: 13px !important;
+  }
+
+  .card {
+    padding: 10px !important;
+  }
+
+  .card h2 {
+    font-size: 18px !important;
+  }
+
+  .sidebar-nav-item {
+    font-size: 12px !important;
+    padding: 8px !important;
+  }
+
+  table {
+    font-size: 11px !important;
+  }
+
+  table th,
+  table td {
+    padding: 8px 6px !important;
+  }
+}
+
+/* Landscape mode */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  body {
+    padding-top: 50px !important;
+  }
+
+  .dashboard-header {
+    height: 50px !important;
+  }
+
+  .dashboard-main {
+    padding: 10px !important;
+  }
+
+  .sidebar-nav {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+  }
+
+  .sidebar-nav-item {
+    flex: 0 0 auto !important;
+    min-width: 120px !important;
+  }
+}
+
+/* ==================== FIX HEADER OVERLAP ==================== */
+
+/* Fix body padding to account for fixed header */
+body {
+  padding-top: 70px !important;
+}
+
+/* User info section - make it scrollable, not fixed */
+.user-info-section {
+  position: relative !important;
+  top: 0 !important;
+  background: white;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Ensure main content doesn't go under header */
+.dashboard-main {
+  margin-top: 0 !important;
+  padding-top: 24px !important;
+}
+
+/* Budget cards - add top margin on mobile */
+@media screen and (max-width: 768px) {
+  body {
+    padding-top: 60px !important;
+  }
+
+  .user-info-section {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  /* Add spacing for user info */
+  .dashboard-main > *:first-child {
+    margin-top: 0 !important;
+  }
+
+  /* Fix budget stats not being covered */
+  .budget-stats-container {
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+  }
+
+  /* Upload buttons section */
+  .upload-buttons-section {
+    position: relative;
+    z-index: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    padding-top: 55px !important;
+  }
+
+  .user-info-section {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Ensure all cards stack properly */
+  .card {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* ==================== FIX PROFILE DROPDOWN OVERFLOW ==================== */
+@media screen and (max-width: 768px) {
+  /* Fix profile dropdown position on mobile */
+  .profile-dropdown {
+    position: fixed !important;
+    top: 55px !important;
+    right: 10px !important;
+    left: 10px !important;
+    width: auto !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+  }
+}

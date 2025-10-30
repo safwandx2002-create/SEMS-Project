@@ -145,3 +145,15 @@ export const statusStyles = {
     color: "#991b1b",
   },
 };
+
+// إضافة دالة iconBox
+export const iconBox = (bgColor, iconColor) => ({
+  width: "48px",
+  height: "48px",
+  borderRadius: "12px",
+  background: bgColor,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  flexShrink: 0,
+});
